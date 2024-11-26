@@ -1,24 +1,6 @@
 export async function POST(req) {
   const data = await req.json();
 
-  const getBalance = async () => {
-    try {
-      const response = await fetch(`${process.env.FLUX_API_URL}/balance`, {
-        headers: {
-          "Content-Type": "application/json",
-          "X-API-KEY": process.env.FLUX_API_KEY,
-        },
-      });
-      if (response.ok) {
-        console.log(await response.json());
-      } else {
-        console.log(response.status, response.statusText);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
   const customReadable = new ReadableStream({
     async start(controller) {
       try {
@@ -61,8 +43,6 @@ export async function POST(req) {
       }
     },
   });
-
-  getBalance();
 
   return new Response(customReadable, {
     headers: {

@@ -12,7 +12,7 @@ const FLUX_ONE_TEMPLATE = {
   aspect_ratio: "1:1",
 };
 
-const ImageBox = () => {
+const ImageBox = ({ setBalanceKey }) => {
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -121,6 +121,9 @@ const ImageBox = () => {
       ]);
     } finally {
       setIsLoading(false);
+      if (setBalanceKey) {
+        setBalanceKey((prev) => prev + 1);
+      }
     }
   };
 
@@ -129,41 +132,44 @@ const ImageBox = () => {
   };
 
   return (
-    <div className="max-[1200px] mx-auto mb-[100px] flex h-full w-[90%] flex-col rounded-lg shadow-custom">
-      {/* Chat messages area */}
-      <div className="flex-1 space-y-4 overflow-y-auto rounded-lg border border-gray-200 p-4">
-        {chatHistory.map((msg, index) => (
-          <div
-            key={index}
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-          >
-            {msg.role === "assistant" && msg.content.startsWith("blob:") ? (
-              <Image
-                src={msg.content}
-                alt="Generated"
-                width={1024}
-                height={1024}
-                className="mt-4 rounded-lg"
-              />
-            ) : (
-              <div
-                className={`max-w-[80%] whitespace-pre-wrap rounded-lg p-3 ${msg.role === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"}`}
-              >
-                <ReactMarkdown>{msg.content}</ReactMarkdown>
-              </div>
-            )}
-          </div>
-        ))}
-        {isLoading && (
-          <div className="flex h-64 items-center justify-center">
-            <div className="loader h-16 w-16 animate-spin rounded-full border-t-4 border-blue-500"></div>
-          </div>
-        )}
-      </div>
+    <>
+      <div className="max-[1200px] mx-auto mb-[100px] flex h-full w-[90%] flex-col rounded-lg shadow-custom">
+        {/* Chat messages area */}
+        <div className="flex-1 space-y-4 overflow-y-auto rounded-lg border border-gray-200 p-4">
+          {chatHistory.map((msg, index) => (
+            <div
+              key={index}
+              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+            >
+              {msg.role === "assistant" && msg.content.startsWith("blob:") ? (
+                <Image
+                  src={msg.content}
+                  alt="Generated"
+                  width={1024}
+                  height={1024}
+                  className="mt-4 rounded-lg"
+                />
+              ) : (
+                <div
+                  className={`max-w-[80%] whitespace-pre-wrap rounded-lg p-3 ${msg.role === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"}`}
+                >
+                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                </div>
+              )}
+            </div>
+          ))}
+          {isLoading && (
+            <div className="flex h-64 items-center justify-center">
+              <div className="loader h-16 w-16 animate-spin rounded-full border-t-4 border-blue-500"></div>
+            </div>
+          )}
+        </div>
 
-      {/* Updated input form */}
-      <form onSubmit={handleSubmit} className="w-full mt-4">
-        <div className="flex w-full gap-2">
+        {/* Updated input form */}
+        <form
+          onSubmit={handleSubmit}
+          className="flex w-full gap-2 flex-col sm:flex-row flex-wrap mt-4"
+        >
           <input
             type="text"
             value={message}
@@ -185,9 +191,9 @@ const ImageBox = () => {
           >
             Clear
           </button>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    </>
   );
 };
 
