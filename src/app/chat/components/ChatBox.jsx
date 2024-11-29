@@ -50,7 +50,7 @@ const ChatBox = ({ setBalanceKey }) => {
         for (const line of lines) {
           if (line === "[DONE]") continue;
 
-          if (line.includes("error")) {
+          if (line.includes("error") && !line.includes("token")) {
             console.log("Error:", line);
             setChatHistory((prev) => [
               ...prev,
