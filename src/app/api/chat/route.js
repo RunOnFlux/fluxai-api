@@ -33,9 +33,7 @@ export async function POST(req) {
 
           console.error("API Error:", errorMessage);
           controller.enqueue(
-            new TextEncoder().encode(
-              `data: ${JSON.stringify(errorMessage)}\n\n`,
-            ),
+            new TextEncoder().encode(`${JSON.stringify(errorMessage)}\n\n`),
           );
           controller.close();
           return;
@@ -47,7 +45,6 @@ export async function POST(req) {
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
-
             controller.enqueue(value);
           }
           controller.close();

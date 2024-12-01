@@ -23,6 +23,7 @@ const ChatBox = ({ setBalanceKey }) => {
 
     try {
       let fullResponse = "";
+      let buffer = "";
 
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -42,34 +43,32 @@ const ChatBox = ({ setBalanceKey }) => {
         if (done) break;
 
         const chunk = decoder.decode(value);
-        const lines = chunk
-          .split("\n")
-          .filter((line) => line.trim().startsWith("data: "))
-          .map((line) => line.replace(/^data: /, "").trim());
+        buffer += chunk;
+
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
 
         for (const line of lines) {
-          if (line === "[DONE]") continue;
-
-          if (line.includes("error") && !line.includes("token")) {
-            console.log("Error:", line);
-            setChatHistory((prev) => [
-              ...prev,
-              {
-                role: "assistant",
-                content:
-                  "Sorry, I encountered an error processing your request.",
-              },
-            ]);
-            continue;
-          }
+          if (!line.trim()) continue;
 
           try {
             const parsedLine = JSON.parse(line);
+            if (parsedLine.error) {
+              setChatHistory((prev) => {
+                const newHistory = [...prev];
+                newHistory[newHistory.length - 1].content =
+                  "Sorry, I encountered an error processing your request.";
+                return newHistory;
+              });
+              continue;
+            }
+            if (parsedLine.choices[0].finish_reason !== null) continue;
 
-            if (parsedLine.token?.text) {
-              if (parsedLine.token.text.includes("<|eot_id|>")) continue;
+            if (parsedLine.choices[0].delta?.content) {
+              if (parsedLine.choices[0].delta.content.includes("<|eot_id|>"))
+                continue;
 
-              let text = parsedLine.token.text;
+              let text = parsedLine.choices[0].delta.content;
               fullResponse += text;
 
               setChatHistory((prev) => {
@@ -79,7 +78,8 @@ const ChatBox = ({ setBalanceKey }) => {
               });
             }
           } catch (e) {
-            console.log("Unable to parse line:", line);
+            console.log("Skipping invalid JSON:", line);
+            continue;
           }
         }
       }
