@@ -1,14 +1,17 @@
 export async function POST(req) {
   try {
     const data = await req.json();
-    const response = await fetch(`${process.env.FLUX_API_URL}/chat/images`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-KEY": process.env.FLUX_API_KEY,
+    const response = await fetch(
+      `${process.env.FLUX_API_URL}/images/generations`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-KEY": process.env.FLUX_API_KEY,
+        },
+        body: JSON.stringify(data),
       },
-      body: JSON.stringify(data),
-    });
+    );
 
     if (!response.ok) {
       console.log(response.status, response.statusText);
