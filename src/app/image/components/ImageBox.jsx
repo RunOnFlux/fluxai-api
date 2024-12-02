@@ -43,60 +43,21 @@ const ImageBox = ({ setBalanceKey }) => {
         body: JSON.stringify(fluxData),
       });
 
-      console.log(response);
       if (!response.ok) {
-        console.log("failed to fetch image");
         throw new Error("Failed to fetch image");
       }
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      const stream = new ReadableStream({
-        start(controller) {
-          function push() {
-            reader
-              .read()
-              .then(({ done, value }) => {
-                if (done) {
-                  controller.close();
-                  return;
-                }
-
-                // Try to decode the value as SSE
-                try {
-                  const text = decoder.decode(value);
-                  if (text.startsWith("data: ")) {
-                    const data = JSON.parse(text.replace("data: ", ""));
-                    if (data.error) {
-                      throw new Error(data.message || "Server error");
-                    }
-                  }
-                } catch (error) {
-                  // If it's not valid SSE or contains an error, throw
-                  controller.error(error);
-                  return;
-                }
-
-                // If we get here, it's binary image data
-                controller.enqueue(value);
-                push();
-              })
-              .catch((error) => {
-                console.error("Stream reading error:", error);
-                controller.error(error);
-              });
-          }
-          push();
-        },
-      });
-
+      const imageData = await response.json();
       try {
-        const responseStream = new Response(stream);
-        const blob = await responseStream.blob();
-        const imageUrl = URL.createObjectURL(blob);
+        const imageUrl = `data:${imageData.data.content_type};base64,${imageData.data.image}`;
+        const imageDetails = imageData.data.metadata || {};
         setChatHistory((prev) => [
           ...prev,
-          { role: "assistant", content: imageUrl },
+          {
+            role: "assistant",
+            content: imageUrl,
+            image_details: imageDetails,
+          },
         ]);
       } catch (error) {
         console.error("Error:", error);
@@ -141,14 +102,20 @@ const ImageBox = ({ setBalanceKey }) => {
               key={index}
               className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
-              {msg.role === "assistant" && msg.content.startsWith("blob:") ? (
-                <Image
-                  src={msg.content}
-                  alt="Generated"
-                  width={1024}
-                  height={1024}
-                  className="mt-4 rounded-lg"
-                />
+              {msg.role === "assistant" && msg.content.includes(";base64,") ? (
+                <div className="flex flex-col items-center">
+                  <Image
+                    src={msg.content}
+                    alt="Generated"
+                    width={1024}
+                    height={1024}
+                    className="mt-4 rounded-lg"
+                  />
+                  <div className="text-sm text-gray-500">
+                    {console.log(msg.image_details)}
+                    Image details: {JSON.stringify(msg.image_details)}
+                  </div>
+                </div>
               ) : (
                 <div
                   className={`max-w-[80%] whitespace-pre-wrap rounded-lg p-3 ${msg.role === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"}`}

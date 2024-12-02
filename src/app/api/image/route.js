@@ -1,54 +1,41 @@
 export async function POST(req) {
-  const data = await req.json();
+  try {
+    const data = await req.json();
+    const response = await fetch(`${process.env.FLUX_API_URL}/chat/images`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-KEY": process.env.FLUX_API_KEY,
+      },
+      body: JSON.stringify(data),
+    });
 
-  const customReadable = new ReadableStream({
-    async start(controller) {
-      try {
-        const response = await fetch(
-          `${process.env.FLUX_API_URL}/chat/images`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "X-API-KEY": process.env.FLUX_API_KEY,
-            },
-            body: JSON.stringify(data),
-          },
-        );
+    if (!response.ok) {
+      console.log(response.status, response.statusText);
+      throw new Error(
+        `API request failed: ${response.status} - ${response.statusText}`,
+      );
+    }
 
-        if (!response.ok) {
-          console.log(response.status, response.statusText);
-          throw new Error(
-            `API request failed: ${response.status} - ${response.statusText}`,
-          );
-        }
+    const imageData = await response.json();
 
-        const reader = response.body.getReader();
+    if (!imageData.data) {
+      throw new Error("No image data received");
+    }
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+    if (imageData.status === "error") {
+      throw new Error("Error generating image");
+    }
 
-          controller.enqueue(value);
-        }
-        controller.close();
-      } catch (error) {
-        const errorMessage = `data: ${JSON.stringify({
-          error: true,
-          message: error.message || "An unexpected error occurred",
-        })}\n\n`;
-        console.error("Error during stream:", error);
-        controller.enqueue(new TextEncoder().encode(errorMessage));
-        controller.close();
-      }
-    },
-  });
-
-  return new Response(customReadable, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-    },
-  });
+    return new Response(JSON.stringify(imageData), {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+    });
+  }
 }
