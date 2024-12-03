@@ -45,6 +45,7 @@ export async function POST(req) {
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
+            //console.log("Value:", new TextDecoder().decode(value));
             controller.enqueue(value);
           }
           controller.close();

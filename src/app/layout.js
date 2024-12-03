@@ -12,9 +12,9 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "FluxAI",
+  title: "FluxAI API Demo",
   description:
-    "FluxAI is your gateway to the Flux ecosystem. Ask FluxAI anything about Flux and FluxOS.",
+    "Explore using the FluxAI API with this demo app.",
 };
 
 export default function RootLayout({ children }) {

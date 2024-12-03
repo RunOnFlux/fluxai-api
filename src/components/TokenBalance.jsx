@@ -41,7 +41,7 @@ export default function TokenBalance({ balanceKey }) {
             </svg>
           ) : (
             <p className="text-xl text-red-500/90">
-              ${balance.api_credit.toFixed(2) || 0}
+              ${balance.api_credit ? balance.api_credit.toFixed(2) : 0}
             </p>
           )}
         </div>
