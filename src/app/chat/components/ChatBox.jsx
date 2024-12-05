@@ -30,7 +30,7 @@ const ChatBox = ({ setBalanceKey }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ messages: currentMessage }),
+        body: JSON.stringify({ messages: currentMessage, stream: true }),
       });
 
       if (!response.ok) throw new Error("Network response was not ok");

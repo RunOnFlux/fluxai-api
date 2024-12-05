@@ -7,7 +7,7 @@ export async function POST(req) {
       console.log("Starting stream");
       try {
         const response = await fetch(
-          `${process.env.FLUX_API_URL}/chat/completions/stream`,
+          `${process.env.FLUX_API_URL}/chat/completions`,
           {
             method: "POST",
             headers: {
