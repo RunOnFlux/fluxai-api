@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function Image() {
   return (
-    <div>
+    <div className="max-w-4xl mx-auto">
       <ImageChat />
     </div>
   );

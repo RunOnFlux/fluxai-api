@@ -17,10 +17,9 @@ export default function TokenBalance({ balanceKey }) {
   }, [balanceKey]);
 
   return (
-    <div className="max-w-[90%] mx-auto flex flex-col items-center justify-center px-4 mb-10">
-      <h1 className="text-4xl font-bold">API Credit Balance</h1>
+    <div className="max-w-[90%] mx-auto flex flex-col items-center justify-center px-4">
       <div className="max-w-sm w-full p-4 gap-8">
-        <div className="rounded-lg font-semibold font-montserrat bg-white/90 text-black p-2 text-center">
+        <div className="rounded-lg font-semibold font-montserrat bg-white/90 text-black px-6 py-2 text-center">
           <h3 className="text-lg">API Credits</h3>
           {loading ? (
             <svg
