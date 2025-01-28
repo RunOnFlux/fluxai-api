@@ -36,7 +36,19 @@ export async function POST(req) {
 }
 
 export async function GET(req) {
-  const response = await fetch(`${process.env.FLUX_API_URL}/files`);
-  const data = await response.json();
-  return NextResponse.json(data);
+  const response = await fetch(`${process.env.FLUX_API_URL}/files`, {
+    headers: {
+      "X-API-KEY": process.env.FLUX_API_KEY,
+    },
+  });
+  if (response.ok) {
+    const data = await response.json();
+    return NextResponse.json(data?.data);
+  } else {
+    return NextResponse.json(
+      { error: response.statusText },
+      { status: response.status },
+    );
+  }
 }
+

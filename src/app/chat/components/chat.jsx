@@ -1,10 +1,12 @@
 "use client";
 import ChatBox from "./ChatBox";
+import ChatFiles from "./ChatFiles";
 import TokenBalance from "@/components/TokenBalance";
 import { useState } from "react";
 
 export default function Chat() {
   const [balanceKey, setBalanceKey] = useState(0);
+  const [fileContext, setFileContext] = useState("");
   return (
     <section
       id="fluxgpt"
@@ -24,7 +26,12 @@ export default function Chat() {
       </div>
       <div className="flex-1 flex flex-col">
         <TokenBalance balanceKey={balanceKey} />
-        <ChatBox setBalanceKey={setBalanceKey} />
+        <ChatBox
+          setBalanceKey={setBalanceKey}
+          fileContext={fileContext}
+          setFileContext={setFileContext}
+        />
+        <ChatFiles setFileContext={setFileContext} fileContext={fileContext} />
       </div>
     </section>
   );

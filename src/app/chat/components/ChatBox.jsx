@@ -1,16 +1,16 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 
-const ChatBox = ({ setBalanceKey }) => {
+const ChatBox = ({ setBalanceKey, fileContext, setFileContext }) => {
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [fileName, setFileName] = useState("");
-
+  const [fileId, setFileId] = useState(fileContext);
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!message.trim() || isLoading) return;
@@ -26,7 +26,6 @@ const ChatBox = ({ setBalanceKey }) => {
       let fullResponse = "";
       let buffer = "";
       let file = document.getElementById("fileInput").files[0];
-      let fileId = null;
 
       if (file) {
         const formData = new FormData();
@@ -41,7 +40,7 @@ const ChatBox = ({ setBalanceKey }) => {
         });
 
         const data = await response.json();
-        fileId = data.data[0].id || null;
+        setFileId(data.data[0].id || null);
       }
 
       const payload = {
@@ -49,12 +48,14 @@ const ChatBox = ({ setBalanceKey }) => {
         stream: true,
       };
 
+      console.log(fileId);
       // TODO: Add file attachments when stream is implemented on fluxINTEL
-      // if (fileId) {
-      //   payload.attachments = {
-      //     files: [fileId],
-      //   };
-      // }
+      if (fileId) {
+        payload.attachments = {
+          files: [fileId],
+        };
+        payload.mode = "rag";
+      }
 
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -83,7 +84,7 @@ const ChatBox = ({ setBalanceKey }) => {
           if (!line.trim()) continue;
 
           try {
-            const parsedLine = JSON.parse(line);
+            const parsedLine = JSON.parse(line.replace(/^data:/, ""));
             if (parsedLine.error) {
               setChatHistory((prev) => {
                 const newHistory = [...prev];
@@ -131,14 +132,20 @@ const ChatBox = ({ setBalanceKey }) => {
     }
   };
 
+  useEffect(() => {
+    setFileId(fileContext);
+  }, [fileContext]);
+
   const handleClear = () => {
     setChatHistory([]);
     setFileName("");
+    setFileId("");
+    setFileContext("");
     document.getElementById("fileInput").value = "";
   };
 
   return (
-    <div className="mx-auto w-[90%] flex flex-col flex-1 rounded-lg shadow-custom pb-[50px]">
+    <div className="mx-auto w-[90%] flex flex-col flex-1 rounded-lg shadow-custom">
       {/* Chat messages area */}
       <div className="flex-1 space-y-4 overflow-y-auto rounded-lg border border-gray-200 p-4 min-h-0">
         {chatHistory.map((msg, index) => (
@@ -193,6 +200,7 @@ const ChatBox = ({ setBalanceKey }) => {
           disabled={isLoading}
         />
         <button
+          type="button"
           onClick={handleClear}
           className="hover:bg-red-600 rounded-lg bg-red-500 px-4 py-2 text-white transition"
         >
@@ -223,6 +231,11 @@ const ChatBox = ({ setBalanceKey }) => {
       {fileName && (
         <div className="text-sm text-gray-500 mt-1">
           <span>Attached file: {fileName}</span>
+        </div>
+      )}
+      {fileId && (
+        <div className="text-sm text-gray-500 mt-1">
+          <span>File context: {fileId}</span>
         </div>
       )}
     </div>
