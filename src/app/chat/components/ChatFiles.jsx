@@ -28,13 +28,13 @@ export default function ChatFiles({ setFileContext, fileContext }) {
     }
   };
   return (
-    <div className="mx-auto w-[90%] flex flex-col my-10">
+    <div className="mx-auto w-[90%] flex flex-col gap-2 min-h-[185px] border border-gray-200 rounded-md my-10 p-4">
       <h1 className="text-2xl font-bold">Files</h1>
       <div className="flex flex-col sm:flex-row gap-4">
         {files.map((file) => (
           <div
             key={file.id}
-            className={`flex flex-col p-2 rounded-md shadow-md text-sm text-semibold cursor-pointer ${
+            className={`flex flex-col p-4 rounded-md shadow-md text-sm text-semibold cursor-pointer ${
               fileContext === file.id
                 ? "bg-blue-500 text-white"
                 : "bg-gray-100 text-black/80"
@@ -44,7 +44,9 @@ export default function ChatFiles({ setFileContext, fileContext }) {
             <span className="text-xs">{file.id}</span>
             <span className="flex items-center gap-2">
               <IdCard size={16} />
-              {file.filename.slice(0, 10)}...{file.filename.slice(-10)}
+              {file.filename.length > 20
+                ? file.filename.slice(0, 10) + "..." + file.filename.slice(-10)
+                : file.filename}
             </span>
             <span className="flex items-center gap-2">
               <File size={16} />

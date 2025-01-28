@@ -200,11 +200,11 @@ const ChatBox = ({ setBalanceKey, fileContext, setFileContext }) => {
           disabled={isLoading}
         />
         <button
-          type="button"
-          onClick={handleClear}
-          className="hover:bg-red-600 rounded-lg bg-red-500 px-4 py-2 text-white transition"
+          type="submit"
+          className={`rounded-lg px-4 py-2 transition ${isLoading ? "cursor-not-allowed bg-gray-400" : "hover:bg-blue-600 bg-blue-500 text-white"}`}
+          disabled={isLoading}
         >
-          Clear
+          {isLoading ? "Sending..." : "Send"}
         </button>
         <input
           type="file"
@@ -221,11 +221,11 @@ const ChatBox = ({ setBalanceKey, fileContext, setFileContext }) => {
           <span>Attach File</span>
         </label>
         <button
-          type="submit"
-          className={`rounded-lg px-4 py-2 transition ${isLoading ? "cursor-not-allowed bg-gray-400" : "hover:bg-blue-600 bg-blue-500 text-white"}`}
-          disabled={isLoading}
+          type="button"
+          onClick={handleClear}
+          className="hover:bg-red-600 rounded-lg bg-red-500 px-4 py-2 text-white transition"
         >
-          {isLoading ? "Sending..." : "Send"}
+          Clear
         </button>
       </form>
       {fileName && (
