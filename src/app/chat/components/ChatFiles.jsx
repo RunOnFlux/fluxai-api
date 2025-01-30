@@ -22,7 +22,7 @@ export default function ChatFiles({ files, setFileContext, fileContext }) {
     <div className="mx-auto w-[90%] flex flex-col gap-2 min-h-[185px] border border-gray-200 rounded-md my-10 p-4">
       <h1 className="text-2xl font-bold">Files</h1>
       <div className="flex justify-around flex-col flex-wrap sm:flex-row gap-4">
-        {files.map((file) => (
+        {files?.map((file) => (
           <div
             key={file.id}
             className={`flex flex-col p-4 min-w-[300px] rounded-md shadow-md text-sm text-semibold cursor-pointer ${

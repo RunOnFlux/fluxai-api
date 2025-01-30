@@ -12,8 +12,13 @@ export default function Chat() {
   const fetchFiles = async () => {
     try {
       const res = await fetch("/api/files");
-      const data = await res.json();
-      setFiles(data || []);
+      if (res.ok) {
+        const data = await res.json();
+        setFiles(data || []);
+      } else {
+        console.error('Error fetching files:', res.status);
+        setFiles([]);
+      }
     } catch (error) {
       console.error('Error fetching files:', error);
       setFiles([]);
