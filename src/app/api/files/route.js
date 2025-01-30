@@ -4,11 +4,16 @@ export async function POST(req) {
   try {
     const formData = await req.formData();
     const files = formData.getAll("files");
+    const tags = formData.getAll("tags");
 
     const serverFormData = new FormData();
     files.forEach((file) => {
       serverFormData.append("files", file);
     });
+
+    if (tags.length > 0) {
+      serverFormData.append("tags", tags);
+    }
 
     const response = await fetch(`${process.env.FLUX_API_URL}/files`, {
       method: "POST",

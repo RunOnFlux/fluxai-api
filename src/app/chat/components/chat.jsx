@@ -2,11 +2,28 @@
 import ChatBox from "./ChatBox";
 import ChatFiles from "./ChatFiles";
 import TokenBalance from "@/components/TokenBalance";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Chat() {
   const [balanceKey, setBalanceKey] = useState(0);
   const [fileContext, setFileContext] = useState("");
+  const [files, setFiles] = useState([]);
+  
+  const fetchFiles = async () => {
+    try {
+      const res = await fetch("/api/files");
+      const data = await res.json();
+      setFiles(data || []);
+    } catch (error) {
+      console.error('Error fetching files:', error);
+      setFiles([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchFiles();
+  }, []);
+
   return (
     <section
       id="fluxgpt"
@@ -30,8 +47,13 @@ export default function Chat() {
           setBalanceKey={setBalanceKey}
           fileContext={fileContext}
           setFileContext={setFileContext}
+          onFileUpload={fetchFiles}
         />
-        <ChatFiles setFileContext={setFileContext} fileContext={fileContext} />
+        <ChatFiles
+          setFileContext={setFileContext}
+          fileContext={fileContext}
+          files={files}
+        />
       </div>
     </section>
   );
