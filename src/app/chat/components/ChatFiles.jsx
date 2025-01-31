@@ -1,4 +1,4 @@
-import { File, Calendar, IdCard, Tag } from "lucide-react";
+import { File, Calendar, IdCard, Tag, Trash2 } from "lucide-react";
 const formatBytes = (bytes) => {
   if (bytes === 0) return "0 Bytes";
 
@@ -9,12 +9,31 @@ const formatBytes = (bytes) => {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 };
 
-export default function ChatFiles({ files, setFileContext, fileContext }) {
+export default function ChatFiles({ files, setFileContext, fileContext, onFileDelete }) {
   const handleFileClick = (file) => {
     if (file.id && file.id !== fileContext) {
       setFileContext(file.id);
     } else if (file.id === fileContext) {
       setFileContext("");
+    }
+  };
+
+  const handleDeleteFile = async (file, event) => {
+    try {
+      event.preventDefault();
+      if (!confirm("Are you sure you want to delete this file?")) {
+        return;
+      }
+      const response = await fetch(`/api/files?id=${file.id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        onFileDelete();
+      } else {
+        alert("Error deleting file, please try again.");
+      }
+    } catch (error) {
+      console.error("Error deleting file:", error);
     }
   };
 
@@ -32,7 +51,15 @@ export default function ChatFiles({ files, setFileContext, fileContext }) {
             }`}
             onClick={() => handleFileClick(file)}
           >
-            <span className="text-xs">{file.id}</span>
+            <div className="flex justify-between items-center">
+              <span className="text-xs">{file.id}</span>
+              <button onClick={(event) => {
+                event.stopPropagation();
+                handleDeleteFile(file, event);
+              }}>
+                <Trash2 size={16} />
+              </button>
+            </div>
             <span className="flex items-center gap-2">
               <IdCard size={16} />
               {file.filename.length > 20

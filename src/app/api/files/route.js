@@ -57,3 +57,36 @@ export async function GET(req) {
   }
 }
 
+export async function DELETE(req) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+    if (!id) {
+      return NextResponse.json({ error: "Missing file ID" }, { status: 400 });
+    }
+    const response = await fetch(
+      `${process.env.FLUX_API_URL}/files/${id.trim()}`,
+      {
+        method: "DELETE",
+        headers: {
+          "X-API-KEY": process.env.FLUX_API_KEY,
+        },
+      },
+    );
+    if (response.ok) {
+      const data = await response.json();
+      return NextResponse.json({ success: true, data });
+    } else {
+      return NextResponse.json(
+        { success: false, error: response.statusText },
+        { status: response.status },
+      );
+    }
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    return NextResponse.json(
+      { success: false, error: "Error deleting file" },
+      { status: 400 },
+    );
+  }
+}

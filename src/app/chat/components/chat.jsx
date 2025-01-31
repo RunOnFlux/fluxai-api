@@ -58,6 +58,7 @@ export default function Chat() {
           setFileContext={setFileContext}
           fileContext={fileContext}
           files={files}
+          onFileDelete={fetchFiles}
         />
       </div>
     </section>
