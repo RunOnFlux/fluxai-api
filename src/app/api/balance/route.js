@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+// eslint-disable-next-line no-unused-vars
 export async function GET(req) {
   try {
     const response = await fetch(`${process.env.FLUX_API_URL}/balance`, {

@@ -1,14 +1,16 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import remarkGfm from "remark-gfm";
 import FileUploadModal from "./FileUploadModal";
 import SettingsModal from "./SettingsModal";
 import { Tag } from "lucide-react";
+import { Markdown } from "@/components/Markdown";
 
-const ChatBox = ({ setBalanceKey, fileContext, setFileContext, onFileUpload }) => {
+const ChatBox = ({
+  setBalanceKey,
+  fileContext,
+  setFileContext,
+  onFileUpload,
+}) => {
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -18,8 +20,8 @@ const ChatBox = ({ setBalanceKey, fileContext, setFileContext, onFileUpload }) =
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [chatSettings, setChatSettings] = useState({
     preamble: "",
-    intelMode: "rag",
-    tags: []
+    intelMode: "query",
+    tags: [],
   });
 
   const handleSubmit = async (e) => {
@@ -41,8 +43,6 @@ const ChatBox = ({ setBalanceKey, fileContext, setFileContext, onFileUpload }) =
         messages: currentMessage,
         stream: true,
       };
-
-      console.log(fileId);
       // TODO: Add file attachments when stream is implemented on fluxINTEL
       if (fileId || chatSettings.tags.length > 0) {
         payload.attachments = {};
@@ -111,6 +111,7 @@ const ChatBox = ({ setBalanceKey, fileContext, setFileContext, onFileUpload }) =
                 return newHistory;
               });
             }
+            // eslint-disable-next-line no-unused-vars
           } catch (e) {
             console.log("Skipping invalid JSON:", line);
             continue;
@@ -156,7 +157,7 @@ const ChatBox = ({ setBalanceKey, fileContext, setFileContext, onFileUpload }) =
   };
 
   return (
-    <div className="mx-auto w-[90%] flex flex-col flex-1 rounded-lg shadow-custom">
+    <div className="mx-auto w-[90%] min-h-[calc(50vh)] flex flex-col flex-1 rounded-lg shadow-custom">
       {/* Chat messages area */}
       <div className="flex-1 space-y-4 overflow-y-auto rounded-lg border border-gray-200 p-4 min-h-0">
         {chatHistory.map((msg, index) => (
@@ -165,33 +166,9 @@ const ChatBox = ({ setBalanceKey, fileContext, setFileContext, onFileUpload }) =
             className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`prose max-w-[80%] whitespace-pre-wrap rounded-lg p-3 ${msg.role === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"}`}
+              className={`prose max-w-full sm:max-w-[90%] rounded-lg p-3 ${msg.role === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"}`}
             >
-              <ReactMarkdown
-                removeExtraSpaces
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  code({ node, inline, className, children, ...props }) {
-                    const match = /language-(\w+)/.exec(className || "");
-                    return !inline && match ? (
-                      <SyntaxHighlighter
-                        style={vscDarkPlus}
-                        language={match[1]}
-                        PreTag="div"
-                        {...props}
-                      >
-                        {String(children).replace(/\n$/, "")}
-                      </SyntaxHighlighter>
-                    ) : (
-                      <code className={className} {...props}>
-                        {children}
-                      </code>
-                    );
-                  },
-                }}
-              >
-                {msg.content}
-              </ReactMarkdown>
+              <Markdown content={msg.content} />
             </div>
           </div>
         ))}
@@ -207,7 +184,7 @@ const ChatBox = ({ setBalanceKey, fileContext, setFileContext, onFileUpload }) =
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your message..."
-          className="focus:outline-none focus:border-blue-500 flex-1 rounded-lg text-black/80 border p-2"
+          className="focus:outline-none focus:border-blue-500 flex-1 rounded-lg text-black/80 border p-2 min-w-0 text-base"
           disabled={isLoading}
         />
         <button
@@ -308,7 +285,10 @@ const ChatBox = ({ setBalanceKey, fileContext, setFileContext, onFileUpload }) =
         <span className="flex items-center gap-2 mt-2">
           <Tag size={16} />
           {chatSettings.tags.map((tag) => (
-            <span key={tag} className="bg-blue-500 text-white p-1 rounded-md text-xs flex items-center gap-1">
+            <span
+              key={tag}
+              className="bg-blue-500 text-white p-1 rounded-md text-xs flex items-center gap-1"
+            >
               {tag}
             </span>
           ))}

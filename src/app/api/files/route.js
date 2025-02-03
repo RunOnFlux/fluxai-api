@@ -40,7 +40,8 @@ export async function POST(req) {
   }
 }
 
-export async function GET(req) {
+// eslint-disable-next-line no-unused-vars
+export async function GET(_req) {
   const response = await fetch(`${process.env.FLUX_API_URL}/files`, {
     headers: {
       "X-API-KEY": process.env.FLUX_API_KEY,
@@ -60,10 +61,11 @@ export async function GET(req) {
 export async function DELETE(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const id = searchParams.get('id');
+    const id = searchParams.get("id");
     if (!id) {
       return NextResponse.json({ error: "Missing file ID" }, { status: 400 });
     }
+
     const response = await fetch(
       `${process.env.FLUX_API_URL}/files/${id.trim()}`,
       {
@@ -71,6 +73,7 @@ export async function DELETE(req) {
         headers: {
           "X-API-KEY": process.env.FLUX_API_KEY,
         },
+        timeout: 120000,
       },
     );
     if (response.ok) {

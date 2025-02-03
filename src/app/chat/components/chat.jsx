@@ -8,7 +8,7 @@ export default function Chat() {
   const [balanceKey, setBalanceKey] = useState(0);
   const [fileContext, setFileContext] = useState("");
   const [files, setFiles] = useState([]);
-  
+
   const fetchFiles = async () => {
     try {
       const res = await fetch("/api/files");
@@ -16,11 +16,11 @@ export default function Chat() {
         const data = await res.json();
         setFiles(data || []);
       } else {
-        console.error('Error fetching files:', res.status);
+        console.error("Error fetching files:", res.status);
         setFiles([]);
       }
     } catch (error) {
-      console.error('Error fetching files:', error);
+      console.error("Error fetching files:", error);
       setFiles([]);
     }
   };

@@ -1,12 +1,18 @@
 import React from "react";
 import { useState } from "react";
 
-const FileUploadModal = ({ isOpen, onClose, onFileSelect, fileName, onFileUpload }) => {
+const FileUploadModal = ({
+  isOpen,
+  onClose,
+  onFileSelect,
+  fileName,
+  onFileUpload,
+}) => {
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [tags, setTags] = useState([]);
   const [newTag, setNewTag] = useState("");
-  
+
   if (!isOpen) return null;
 
   const handleFileSelect = (e) => {
@@ -28,13 +34,13 @@ const FileUploadModal = ({ isOpen, onClose, onFileSelect, fileName, onFileUpload
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       handleAddTag();
     }
   };
 
-  const handleFileUpload = async (e) => {
+  const handleFileUpload = async () => {
     setIsUploading(true);
     if (file) {
       const formData = new FormData();
@@ -61,7 +67,7 @@ const FileUploadModal = ({ isOpen, onClose, onFileSelect, fileName, onFileUpload
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
         <h2 className="text-xl font-semibold mb-4 text-white">Upload File</h2>
-        
+
         <div className="space-y-4">
           <input
             type="file"
@@ -77,9 +83,12 @@ const FileUploadModal = ({ isOpen, onClose, onFileSelect, fileName, onFileUpload
           {fileName && (
             <p className="text-sm text-gray-300">Selected: {fileName}</p>
           )}
-          
+
           <div>
-            <label htmlFor="tags" className="block text-sm font-medium text-gray-300 mb-2">
+            <label
+              htmlFor="tags"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
               Tags
             </label>
             <div className="flex gap-2 mb-2">
@@ -151,7 +160,7 @@ const FileUploadModal = ({ isOpen, onClose, onFileSelect, fileName, onFileUpload
                 Uploading...
               </>
             ) : (
-              'Upload'
+              "Upload"
             )}
           </button>
         </div>
@@ -160,4 +169,4 @@ const FileUploadModal = ({ isOpen, onClose, onFileSelect, fileName, onFileUpload
   );
 };
 
-export default FileUploadModal; 
+export default FileUploadModal;

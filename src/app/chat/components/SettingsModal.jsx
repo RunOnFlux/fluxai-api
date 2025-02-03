@@ -2,7 +2,9 @@ import React, { useState } from "react";
 
 const SettingsModal = ({ isOpen, onClose, initialSettings, onSave }) => {
   const [preamble, setPreamble] = useState(initialSettings?.preamble || "");
-  const [intelMode, setIntelMode] = useState(initialSettings?.intelMode || "RAG");
+  const [intelMode, setIntelMode] = useState(
+    initialSettings?.intelMode || "query",
+  );
   const [tags, setTags] = useState(initialSettings?.tags || []);
   const [newTag, setNewTag] = useState("");
 
@@ -20,7 +22,7 @@ const SettingsModal = ({ isOpen, onClose, initialSettings, onSave }) => {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       handleAddTag();
     }
@@ -30,7 +32,7 @@ const SettingsModal = ({ isOpen, onClose, initialSettings, onSave }) => {
     onSave({
       preamble,
       intelMode,
-      tags
+      tags,
     });
     onClose();
   };
@@ -38,7 +40,7 @@ const SettingsModal = ({ isOpen, onClose, initialSettings, onSave }) => {
   const handleClose = () => {
     // Reset all form values to initial settings
     setPreamble(initialSettings?.preamble || "");
-    setIntelMode(initialSettings?.intelMode || "RAG");
+    setIntelMode(initialSettings?.intelMode || "query");
     setTags(initialSettings?.tags || []);
     setNewTag("");
     onClose();
@@ -48,11 +50,14 @@ const SettingsModal = ({ isOpen, onClose, initialSettings, onSave }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
         <h2 className="text-xl font-semibold mb-4 text-white">Chat Settings</h2>
-        
+
         <div className="space-y-4">
           {/* Preamble */}
           <div>
-            <label htmlFor="preamble" className="block text-sm font-medium text-gray-300 mb-2">
+            <label
+              htmlFor="preamble"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
               Preamble
             </label>
             <textarea
@@ -67,7 +72,10 @@ const SettingsModal = ({ isOpen, onClose, initialSettings, onSave }) => {
 
           {/* Intel Mode */}
           <div>
-            <label htmlFor="intelMode" className="block text-sm font-medium text-gray-300 mb-2">
+            <label
+              htmlFor="intelMode"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
               Intel Mode
             </label>
             <select
@@ -76,15 +84,18 @@ const SettingsModal = ({ isOpen, onClose, initialSettings, onSave }) => {
               value={intelMode}
               onChange={(e) => setIntelMode(e.target.value)}
             >
+              <option value="query">Query</option>
               <option value="rag">RAG</option>
               <option value="summarize">Summarize</option>
-              <option value="query">Query</option>
             </select>
           </div>
 
           {/* Tags */}
           <div>
-            <label htmlFor="tags" className="block text-sm font-medium text-gray-300 mb-2">
+            <label
+              htmlFor="tags"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
               Tags
             </label>
             <div className="flex gap-2 mb-2">
@@ -142,4 +153,4 @@ const SettingsModal = ({ isOpen, onClose, initialSettings, onSave }) => {
   );
 };
 
-export default SettingsModal; 
+export default SettingsModal;
