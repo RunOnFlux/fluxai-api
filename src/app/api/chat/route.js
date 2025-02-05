@@ -1,10 +1,20 @@
 export async function POST(req) {
   const data = await req.json();
+  const signal = req.signal; // Get the abort signal from the request
 
   // Set up streaming response headers
   const customReadable = new ReadableStream({
     async start(controller) {
       console.log("Starting stream");
+      let isClosed = false;
+
+      const closeController = () => {
+        if (!isClosed) {
+          isClosed = true;
+          controller.close();
+        }
+      };
+
       try {
         const response = await fetch(
           `${process.env.FLUX_API_URL}/chat/completions`,
@@ -15,6 +25,7 @@ export async function POST(req) {
               "X-API-KEY": process.env.FLUX_API_KEY,
             },
             body: JSON.stringify(data),
+            signal, // Pass the abort signal to the upstream request
           },
         );
 
@@ -35,11 +46,18 @@ export async function POST(req) {
           controller.enqueue(
             new TextEncoder().encode(`${JSON.stringify(errorMessage)}\n\n`),
           );
-          controller.close();
+          closeController();
           return;
         }
 
         const reader = response.body.getReader();
+
+        // Handle abort signal
+        signal?.addEventListener("abort", () => {
+          console.log("Request aborted");
+          reader.cancel();
+          closeController();
+        });
 
         try {
           while (true) {
@@ -48,14 +66,19 @@ export async function POST(req) {
             //console.log("Value:", new TextDecoder().decode(value));
             controller.enqueue(value);
           }
-          controller.close();
+          closeController();
           console.log("Stream closed");
         } catch (error) {
           console.error("Error during stream:", error);
           controller.error(error);
         }
       } catch (error) {
-        controller.error(error);
+        if (error.name === "AbortError") {
+          console.log("Request aborted");
+          closeController();
+        } else {
+          controller.error(error);
+        }
       }
     },
   });

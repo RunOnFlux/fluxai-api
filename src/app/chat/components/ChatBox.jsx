@@ -23,10 +23,14 @@ const ChatBox = ({
     intelMode: "query",
     tags: [],
   });
+  const [controller, setController] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!message.trim() || isLoading) return;
+
+    const newController = new AbortController();
+    setController(newController);
 
     const currentMessage = [...chatHistory, { role: "user", content: message }];
     setChatHistory(currentMessage);
@@ -65,6 +69,7 @@ const ChatBox = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
+        signal: newController.signal,
       });
 
       if (!response.ok) throw new Error("Network response was not ok");
@@ -119,14 +124,25 @@ const ChatBox = ({
         }
       }
     } catch (error) {
-      console.error("Error:", error);
-      setChatHistory((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "Sorry, I encountered an error processing your request.",
-        },
-      ]);
+      if (error.name === "AbortError") {
+        console.log("Request was aborted");
+        setChatHistory((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "Request cancelled.",
+          },
+        ]);
+      } else {
+        console.error("Error:", error);
+        setChatHistory((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "Sorry, I encountered an error processing your request.",
+          },
+        ]);
+      }
     } finally {
       setIsLoading(false);
       if (setBalanceKey) {
@@ -191,13 +207,27 @@ const ChatBox = ({
           type="submit"
           className={`rounded-lg px-4 py-2 transition ${isLoading ? "cursor-not-allowed bg-gray-400" : "hover:bg-blue-600 bg-blue-500 text-white"}`}
           disabled={isLoading}
+          style={{ display: isLoading ? "none" : "block" }}
         >
           {isLoading ? "Sending..." : "Send"}
         </button>
         <button
           type="button"
+          onClick={() => {
+            if (controller) {
+              controller.abort();
+              setController(null);
+            }
+          }}
+          className="rounded-lg hover:bg-red-600 bg-red-500 px-4 py-2 text-white transition"
+          style={{ display: isLoading ? "block" : "none" }}
+        >
+          Stop
+        </button>
+        <button
+          type="button"
           onClick={handleClear}
-          className="hover:bg-red-600 rounded-lg bg-red-500 px-4 py-2 text-white transition"
+          className="rounded-lg hover:bg-red-600 bg-red-500 px-4 py-2 text-white transition"
         >
           Clear
         </button>
