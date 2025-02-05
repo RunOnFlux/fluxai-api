@@ -159,7 +159,7 @@ const ChatBox = ({
   return (
     <div className="mx-auto w-[90%] min-h-[calc(50vh)] flex flex-col flex-1 rounded-lg shadow-custom">
       {/* Chat messages area */}
-      <div className="flex-1 space-y-4 overflow-y-auto rounded-lg border border-gray-200 p-4 min-h-0">
+      <div className="flex-1 space-y-4 overflow-y-auto rounded-lg border  p-4 min-h-0">
         {chatHistory.map((msg, index) => (
           <div
             key={index}

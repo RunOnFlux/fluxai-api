@@ -61,12 +61,12 @@ export default function ChatFiles({
   };
 
   return (
-    <div className="mx-auto w-[90%] flex flex-col gap-2 border border-gray-200 rounded-md my-10 p-4">
+    <div className="mx-auto w-[90%] flex flex-col gap-2 border  rounded-md my-10 p-4">
       <div
         className="flex items-center justify-between cursor-pointer"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <h1 className="text-2xl font-bold">Files</h1>
+        <h1 className="text-2xl font-bold ">Files</h1>
         <span className="text-2xl">
           {isExpanded ? <ChevronDown size={24} /> : <ChevronUp size={24} />}
         </span>
@@ -82,8 +82,8 @@ export default function ChatFiles({
             key={file.id}
             className={`flex flex-col p-4 min-w-[300px] rounded-md shadow-md text-sm text-semibold cursor-pointer ${
               fileContext === file.id
-                ? "bg-blue-500 text-white"
-                : "bg-gray-100 text-black/80"
+                ? "bg-blue-500 "
+                : "bg-gray-200 text-black/90"
             }`}
             onClick={() => handleFileClick(file)}
           >

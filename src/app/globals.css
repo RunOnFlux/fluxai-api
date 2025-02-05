@@ -2,22 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
-}
+} */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* @media (prefers-color-scheme: dark) { */
+:root {
+  --background: rgb(8, 22, 41, 1);
+  --foreground: rgb(156, 163, 175, 0.75);
+  --cardText: rgb(255, 255, 255, 0.9);
 }
+/* } */
 
 body {
-  color: var(--foreground);
+  color: var(--cardText);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Montserrat", sans-serif;
+  border-color: var(--cardText);
 }
 
 .prose pre {

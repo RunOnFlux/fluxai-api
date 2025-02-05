@@ -101,9 +101,9 @@ const ImageBox = ({ setBalanceKey }) => {
 
   return (
     <>
-      <div className="mx-auto w-[90%] flex flex-1 h-full flex-col rounded-lg shadow-custom pb-[50px]">
+      <div className="mx-auto w-[90%] flex flex-1 h-full flex-col rounded-lg pb-[50px]">
         {/* Chat messages area */}
-        <div className="flex-1 space-y-4 overflow-y-auto rounded-lg border border-gray-200 p-4 min-h-0">
+        <div className="flex-1 space-y-4 overflow-y-auto rounded-lg border  p-4 min-h-0">
           {chatHistory.map((msg, index) => (
             <div
               key={index}
