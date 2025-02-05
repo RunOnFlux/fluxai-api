@@ -2,11 +2,11 @@ import {
   File,
   Calendar,
   IdCard,
-  Tag,
   Trash2,
   ChevronUp,
   ChevronDown,
   Loader2,
+  Tag,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -25,6 +25,7 @@ export default function ChatFiles({
   setFileContext,
   fileContext,
   onFileDelete,
+  chatSettings,
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [deletingFileId, setDeletingFileId] = useState(null);
@@ -61,21 +62,40 @@ export default function ChatFiles({
   };
 
   return (
-    <div className="mx-auto w-[90%] flex flex-col gap-2 border  rounded-md my-10 p-4">
+    <div className="mx-auto w-[90%] flex flex-col gap-2 border rounded-md p-1 my-2">
       <div
         className="flex items-center justify-between cursor-pointer"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <h1 className="text-2xl font-bold ">Files</h1>
-        <span className="text-2xl">
+        <h1 className="text-lg font-bold ">Files</h1>
+        <span className="text-lg">
           {isExpanded ? <ChevronDown size={24} /> : <ChevronUp size={24} />}
         </span>
       </div>
 
+      {fileContext && (
+        <div className="text-sm">
+          <span>File context: {fileContext}</span>
+        </div>
+      )}
+      {chatSettings.tags && chatSettings.tags.length > 0 && (
+        <span className="flex items-center gap-2">
+          <Tag size={16} />
+          {chatSettings.tags.map((tag) => (
+            <span
+              key={tag}
+              className="bg-blue-500 text-white p-1 rounded-md text-xs flex items-center gap-1"
+            >
+              {tag}
+            </span>
+          ))}
+        </span>
+      )}
+
       <div
-        className={`flex justify-around flex-col flex-wrap sm:flex-row gap-4 ${
+        className={`flex justify-around flex-wrap gap-4 ${
           isExpanded ? "block" : "hidden"
-        }`}
+        } max-h-[200px] overflow-y-auto`}
       >
         {files?.map((file) => (
           <div

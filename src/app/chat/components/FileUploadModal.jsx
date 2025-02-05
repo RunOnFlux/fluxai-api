@@ -1,13 +1,7 @@
 import React from "react";
 import { useState } from "react";
 
-const FileUploadModal = ({
-  isOpen,
-  onClose,
-  onFileSelect,
-  fileName,
-  onFileUpload,
-}) => {
+const FileUploadModal = ({ isOpen, onClose, onFileSelect, onFileUpload }) => {
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [tags, setTags] = useState([]);
@@ -80,8 +74,8 @@ const FileUploadModal = ({
               hover:file:bg-green-600"
             onChange={handleFileSelect}
           />
-          {fileName && (
-            <p className="text-sm text-gray-300">Selected: {fileName}</p>
+          {file && (
+            <p className="text-sm text-gray-300">Selected: {file.name}</p>
           )}
 
           <div>
