@@ -1,4 +1,5 @@
 import { Montserrat, Inter } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -18,10 +19,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`${montserrat.variable} ${inter.variable}`}>
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`${montserrat.variable} ${inter.variable}`}>
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

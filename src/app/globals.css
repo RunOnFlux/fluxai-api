@@ -15,6 +15,10 @@
 }
 /* } */
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   color: var(--cardText);
   background: var(--background);

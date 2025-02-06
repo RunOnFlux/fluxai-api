@@ -1,19 +1,14 @@
-import ImageChat from "./components/ImageChat";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import { SignIn } from "@clerk/nextjs";
 import { SignedIn, SignOutButton } from "@clerk/nextjs";
 import { LogOutIcon } from "lucide-react";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
-export const metadata = {
-  title: "Flux | Image Generator",
-  description: "Generate an image with FluxAI.",
-};
-
-export default function Image() {
+export default function Page() {
   return (
     <div className="max-w-6xl mx-auto font-montserrat">
       <nav className="px-4 pt-4 flex justify-between items-center">
         <Breadcrumbs
-          items={[{ label: "Home", href: "/" }, { label: "FluxONE" }]}
+          items={[{ label: "Home", href: "/" }, { label: "Sign In" }]}
         />
         <SignedIn>
           <SignOutButton>
@@ -23,7 +18,9 @@ export default function Image() {
           </SignOutButton>
         </SignedIn>
       </nav>
-      <ImageChat />
+      <main className="min-h-96 mt-16 grid place-items-center">
+        <SignIn />
+      </main>
     </div>
   );
 }
