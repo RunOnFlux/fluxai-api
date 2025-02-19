@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 
-const SettingsModal = ({ isOpen, onClose, initialSettings, onSave }) => {
+const SettingsModal = ({ isOpen, onClose, initialSettings, onSave, llms }) => {
   const [preamble, setPreamble] = useState(initialSettings?.preamble || "");
   const [intelMode, setIntelMode] = useState(
     initialSettings?.intelMode || "query",
   );
   const [tags, setTags] = useState(initialSettings?.tags || []);
   const [newTag, setNewTag] = useState("");
+  const [model, setModel] = useState(initialSettings?.model || "");
 
   if (!isOpen) return null;
 
@@ -33,6 +34,7 @@ const SettingsModal = ({ isOpen, onClose, initialSettings, onSave }) => {
       preamble,
       intelMode,
       tags,
+      model,
     });
     onClose();
   };
@@ -43,6 +45,7 @@ const SettingsModal = ({ isOpen, onClose, initialSettings, onSave }) => {
     setIntelMode(initialSettings?.intelMode || "query");
     setTags(initialSettings?.tags || []);
     setNewTag("");
+    setModel(initialSettings?.model || "");
     onClose();
   };
 
@@ -68,6 +71,28 @@ const SettingsModal = ({ isOpen, onClose, initialSettings, onSave }) => {
               onChange={(e) => setPreamble(e.target.value)}
               placeholder="Enter preamble text..."
             />
+          </div>
+
+          {/* Model */}
+          <div>
+            <label
+              htmlFor="model"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
+              Model
+            </label>
+            <select
+              id="model"
+              className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500"
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+            >
+              {llms.map((llm) => (
+                <option key={llm} value={llm}>
+                  {llm}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Intel Mode */}

@@ -7,7 +7,7 @@ import SettingsModal from "./SettingsModal";
 import FileUploadModal from "./FileUploadModal";
 import { useState, useEffect } from "react";
 
-export default function Chat() {
+export default function Chat({ llms }) {
   const [balanceKey, setBalanceKey] = useState(0);
   const [fileContext, setFileContext] = useState("");
   const [files, setFiles] = useState([]);
@@ -20,6 +20,7 @@ export default function Chat() {
     preamble: "",
     intelMode: "query",
     tags: [],
+    model: "",
   });
 
   const fetchFiles = async () => {
@@ -50,12 +51,16 @@ export default function Chat() {
 
     const currentMessage = [...chatHistory, { role: "user", content: message }];
     setChatHistory(currentMessage);
-    setChatHistory((prev) => [...prev, { role: "assistant", content: "" }]);
+    setChatHistory((prev) => [
+      ...prev,
+      { role: "assistant", content: "", thinking: "" },
+    ]);
 
     setIsLoading(true);
 
     try {
       let fullResponse = "";
+      let thinkingResponse = "";
       let buffer = "";
 
       const payload = {
@@ -78,6 +83,10 @@ export default function Chat() {
         payload.preamble = chatSettings.preamble;
       }
 
+      if (chatSettings.model && !payload.attachments) {
+        payload.model = chatSettings.model;
+      }
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
@@ -93,6 +102,7 @@ export default function Chat() {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
+      let thinking = false;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -114,6 +124,7 @@ export default function Chat() {
                 const newHistory = [...prev];
                 newHistory[newHistory.length - 1].content =
                   "Sorry, I encountered an error processing your request.";
+                newHistory[newHistory.length - 1].thinking = "";
                 return newHistory;
               });
               continue;
@@ -124,12 +135,26 @@ export default function Chat() {
               if (parsedLine.choices[0].delta.content.includes("<|eot_id|>"))
                 continue;
 
+              if (parsedLine.choices[0].delta.content.includes("<think>")) {
+                thinking = true;
+                continue;
+              }
+
+              if (parsedLine.choices[0].delta.content.includes("</think>")) {
+                thinking = false;
+                continue;
+              }
+
               let text = parsedLine.choices[0].delta.content;
-              fullResponse += text;
+              thinking ? (thinkingResponse += text) : (fullResponse += text);
 
               setChatHistory((prev) => {
                 const newHistory = [...prev];
-                newHistory[newHistory.length - 1].content = fullResponse;
+                if (thinking) {
+                  newHistory[newHistory.length - 1].thinking = thinkingResponse;
+                } else {
+                  newHistory[newHistory.length - 1].content = fullResponse;
+                }
                 return newHistory;
               });
             }
@@ -143,9 +168,10 @@ export default function Chat() {
     } catch (error) {
       if (error.name === "AbortError") {
         console.log("Request was aborted");
+
         setChatHistory((prev) => [
           ...prev,
-          { role: "assistant", content: "Request cancelled." },
+          { role: "assistant", content: "Request cancelled.", thinking: "" },
         ]);
       } else {
         console.error("Error:", error);
@@ -154,6 +180,7 @@ export default function Chat() {
           {
             role: "assistant",
             content: "Sorry, I encountered an error processing your request.",
+            thinking: "",
           },
         ]);
       }
@@ -238,6 +265,7 @@ export default function Chat() {
         onClose={() => setIsSettingsModalOpen(false)}
         initialSettings={chatSettings}
         onSave={handleSettingsSave}
+        llms={llms}
       />
     </section>
   );

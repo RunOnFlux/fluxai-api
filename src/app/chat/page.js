@@ -8,7 +8,24 @@ export const metadata = {
   description: "Chat with Flux.",
 };
 
-export default function Chat() {
+const getLLMs = async () => {
+  try {
+    const response = await fetch(`${process.env.FLUX_API_URL}/llms`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.FLUX_API_KEY}`,
+      },
+    });
+    const data = await response.json();
+    return data.data.map((llm) => llm.nickname);
+  } catch (error) {
+    console.error("Error fetching LLMs:", error);
+    return [];
+  }
+};
+
+export default async function Chat() {
+  const llms = await getLLMs();
   return (
     <div className="max-w-6xl mx-auto font-montserrat">
       <nav className="px-4 pt-4 flex justify-between items-center">
@@ -23,7 +40,7 @@ export default function Chat() {
           </SignOutButton>
         </SignedIn>
       </nav>
-      <ChatHeader />
+      <ChatHeader llms={llms} />
     </div>
   );
 }

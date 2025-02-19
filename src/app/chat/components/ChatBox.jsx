@@ -6,6 +6,7 @@ const ChatBox = ({ chatHistory }) => {
   const containerRef = useRef(null);
   const lastMessageRef = useRef(null);
   const [prevMessageCount, setPrevMessageCount] = useState(chatHistory.length);
+  const [expandedThoughts, setExpandedThoughts] = useState({});
 
   useEffect(() => {
     // Only scroll when a new message is added
@@ -39,6 +40,32 @@ const ChatBox = ({ chatHistory }) => {
                   : "bg-gray-200 text-gray-800"
               }`}
             >
+              {msg.thinking && (
+                <div className="group mb-2">
+                  <div
+                    className="text-sm bg-background px-4 py-2 rounded-md text-white flex items-center justify-between gap-1 cursor-pointer"
+                    onClick={() => {
+                      const elem = document.getElementById(`thinking-${index}`);
+                      elem.classList.toggle("hidden");
+                      setExpandedThoughts((prev) => ({
+                        ...prev,
+                        [index]: !prev[index],
+                      }));
+                    }}
+                  >
+                    <span className="font-semibold">Thoughts</span>
+                    <span className="text-xs">
+                      {expandedThoughts[index] ? "▲" : "▼"}
+                    </span>
+                  </div>
+                  <div
+                    id={`thinking-${index}`}
+                    className="text-sm italic text-gray-500 mt-1 cursor-default border-l-4 border-gray-400 px-4"
+                  >
+                    <Markdown content={msg.thinking} />
+                  </div>
+                </div>
+              )}
               <Markdown content={msg.content} />
             </div>
           </div>
