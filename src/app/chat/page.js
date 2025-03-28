@@ -19,7 +19,7 @@ const getLLMs = async () => {
     const data = await response.json();
     return data.data.map((llm) => llm.nickname);
   } catch (error) {
-    console.error("Error fetching LLMs:", error);
+    console.log("Error fetching LLMs:", error);
     return [];
   }
 };

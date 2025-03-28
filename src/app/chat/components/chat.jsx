@@ -87,7 +87,12 @@ export default function Chat({ llms }) {
         payload.model = chatSettings.model;
       }
 
-      const response = await fetch("/api/chat", {
+      let endpoint = "/api/chat";
+      if (chatSettings.intelMode === "scrape") {
+        endpoint = "/api/webscrape";
+      }
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

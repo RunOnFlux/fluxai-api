@@ -112,6 +112,7 @@ const SettingsModal = ({ isOpen, onClose, initialSettings, onSave, llms }) => {
               <option value="query">Query</option>
               <option value="rag">RAG</option>
               <option value="summarize">Summarize</option>
+              <option value="scrape">Scrape</option>
             </select>
           </div>
 

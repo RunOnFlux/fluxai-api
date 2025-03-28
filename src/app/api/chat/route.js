@@ -17,7 +17,8 @@ export async function POST(req) {
 
       try {
         const response = await fetch(
-          `${process.env.FLUX_API_URL}/chat/completions`,
+          `${process.env.FLUX_API_URL}/interactive-search`,
+          //`${process.env.FLUX_API_URL}/chat/completions`,
           {
             method: "POST",
             headers: {
